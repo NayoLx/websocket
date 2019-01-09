@@ -89,15 +89,13 @@
             var wsurl = 'ws://127.0.0.1:13142/service/socket.php';
             var websocket;
             var i = 0;
-            var myDate = new Date();
             
             if(window.WebSocket){
                 websocket = new WebSocket(wsurl);
 
                 //连接建立
                 websocket.onopen = function(evevt){
-                	var mytime=myDate.toLocaleTimeString();
-                    console.log(mytime + "Connected to WebSocket server.");
+                    console.log("Connected to WebSocket server.");
                     $('.show-area').append('<p class="bg-info message"><i class="glyphicon glyphicon-info-sign"></i>Connected to WebSocket server!</p>');
                 }
                 //收到消息
@@ -107,6 +105,7 @@
                     var type = msg.type; // 消息类型
                     var umsg = msg.message; //消息文本
                     var uname = msg.name; //发送人
+                    var aurl = msg.avatarUrl;
                     i++;
                     if(type == 'usermsg'){
                         $('.show-area').append('<p class="bg-success message"><i class="glyphicon glyphicon-user"></i><a name="'+i+'"></a><span class="label label-primary">'+uname+' say: </span>'+umsg+'</p>');
@@ -122,8 +121,7 @@
                 //发生错误
                 websocket.onerror = function(event){
                     i++;
-                    var mytime=myDate.toLocaleTimeString();
-                    console.log(mytime + "Connected to WebSocket server error");
+                    console.log("Connected to WebSocket server error");
                     $('.show-area').append('<p class="bg-danger message"><a name="'+i+'"></a><i class="glyphicon glyphicon-info-sign"></i>Connect to WebSocket server error.</p>');
                     window.location.hash = '#'+i;
                 }
@@ -131,8 +129,7 @@
                 //连接关闭
                 websocket.onclose = function(event){
                     i++;
-                    var mytime=myDate.toLocaleTimeString();
-                    console.log(mytime +'websocket Connection Closed. ');
+                    console.log('websocket Connection Closed. ');
                     $('.show-area').append('<p class="bg-warning message"><a name="'+i+'"></a><i class="glyphicon glyphicon-info-sign"></i>websocket Connection Closed.</p>');
                     window.location.hash = '#'+i;
                 }
@@ -140,6 +137,7 @@
                 function send(){
                     var name = $('#name').val();
                     var message = $('#message').val();
+                    var aurl = 'https://toss.jiwork.com/engineer/20181010/33/93bf7dee765c8b9197662a269ed168c9.jpg!90x90';
                     if(!name){
                         alert('请输入用户名!');
                         return false;
@@ -150,7 +148,8 @@
                     }
                     var msg = {
                         message: message,
-                        name: name
+                        name: name,
+                        avatarUrl: aurl
                     };
                     try{  
                         websocket.send(JSON.stringify(msg)); 

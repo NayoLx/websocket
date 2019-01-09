@@ -4,9 +4,10 @@ $port = '13142';
 $null = NULL; 
 
 //创建tcp socket
+set_time_limit(0);
 $socket = socket_create(AF_INET, SOCK_STREAM, SOL_TCP);
 socket_set_option($socket, SOL_SOCKET, SO_REUSEADDR, 1);
-socket_bind($socket, '127.0.0.1', $port);
+socket_bind($socket, 0, $port);
 
 //监听端口
 socket_listen($socket);
@@ -18,7 +19,7 @@ $clients = array($socket);
 while (true) {
     
     $changed = $clients;
-    socket_select($changed, $null, $null, 0);
+    socket_select($changed, $null, $null, 0, 10);
     
     //如果有新的连接
     if (in_array($socket, $changed)) {
@@ -49,9 +50,10 @@ while (true) {
             $tst_msg = json_decode($received_text);  
             $user_name = $tst_msg->name; 
             $user_message = $tst_msg->message; 
+            $user_avatarUrl = $tst_msg->avatarUrl; 
             
             //把消息发送回所有连接的 client 上去
-            $response_text = mask(json_encode(array('type'=>'usermsg', 'name'=>$user_name, 'message'=>$user_message)));
+            $response_text = mask(json_encode(array('type'=>'usermsg', 'name'=>$user_name, 'message'=>$user_message, 'avatarUrl'=>$user_avatarUrl)));
             send_message($response_text);
             break 2; 
         }
@@ -67,6 +69,7 @@ while (true) {
         }
     }
 }
+
 // 关闭监听的socket
 socket_close($sock);
 
@@ -139,7 +142,7 @@ function perform_handshaking($receved_header,$client_conn, $host, $port)
     "Upgrade: websocket\r\n" .
     "Connection: Upgrade\r\n" .
     "WebSocket-Origin: $host\r\n" .
-    "WebSocket-Location: ws://$host:$port/demo/shout.php\r\n".
+    "WebSocket-Location: ws://$host:$port/service/socket.php\r\n".
     "Sec-WebSocket-Accept:$secAccept\r\n\r\n";
     socket_write($client_conn,$upgrade,strlen($upgrade));
 }
