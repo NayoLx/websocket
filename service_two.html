@@ -86,7 +86,8 @@
         <script src="https://cdn.bootcss.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
         <script>
         $(function(){
-            var wsurl = 'ws://127.0.0.1:13142/service/socket.php';
+            var wsurl = 'ws://127.0.0.1:13142';
+//          var wsurl = 'ws://192.168.0.106:2346';
             var websocket;
             var i = 0;
             
@@ -107,7 +108,7 @@
                     var uname = msg.name; //发送人
                     var aurl = msg.avatarUrl;
                     i++;
-                    if(type == 'usermsg'){
+                    if(type == 'usermsg' && uname != null){
                         $('.show-area').append('<p class="bg-success message"><i class="glyphicon glyphicon-user"></i><a name="'+i+'"></a><span class="label label-primary">'+uname+' say: </span>'+umsg+'</p>');
                     }
                     if(type == 'system'){
